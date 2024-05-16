@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Management</title>
+    <style>
+        #console {
+            width: 100%;
+            height: 200px;
+            border: 1px solid #000;
+            padding: 10px;
+            background: #f9f9f9;
+            overflow-y: auto;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>IP Management</h1>
+    <button onclick="changeIp()">Change IP</button>
+    <button onclick="resetIps()">Reset IPs</button>
+    <div id="console"></div>
+    <script>
+        async function changeIp() {
+            const response = await fetch('/change_ip', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            logToConsole(data.message);
+        }
+
+        async function resetIps() {
+            const response = await fetch('/reset_ips', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            logToConsole(data.message);
+        }
+
+        function logToConsole(message) {
+            const consoleElem = document.getElementById('console');
+            const newMessage = document.createElement('div');
+            newMessage.textContent = message;
+            consoleElem.appendChild(newMessage);
+            consoleElem.scrollTop = consoleElem.scrollHeight;
+        }
+    </script>
+</body>
+</html>

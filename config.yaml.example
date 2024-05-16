@@ -7,3 +7,7 @@ cloudflare:
   zone_name: 'domain_name'
   dns_name_proxied: 'subdomain_name'
   dns_name_not_proxied: 'subdomain_name2'
+
+webapp:
+  username: 'user'
+  password: 'hashed_password'
