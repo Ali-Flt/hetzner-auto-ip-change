@@ -1,0 +1,33 @@
+version: '1'
+services:
+  ip-changer:
+    image: hetzner-ip-changer
+    restart: always
+    network_mode: "host"
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "python3 -u main.py ${cmd}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+      
+  redis_db:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '127.0.0.1:6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    volumes: 
+      - cache:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10"
+
+volumes:
+  cache:
+    driver: local

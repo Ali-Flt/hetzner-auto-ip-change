@@ -1,0 +1,9 @@
+hetzner:
+  token: 'some_token'
+  server_name: 'hetzner_server_name'
+
+cloudflare:
+  token: 'some_token'
+  zone_name: 'domain_name'
+  dns_name: 'subdomain_name'
+  proxied: False
