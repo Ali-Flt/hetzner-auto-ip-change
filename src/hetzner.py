@@ -22,23 +22,23 @@ class Hetzner:
         server.shutdown()
         sleep(60)
         new = self._create_new_ip()
-        sleep(5)
+        sleep(10)
         new_but_used_ips = []
         while new.ip in self._already_used_ips:
             new_but_used_ips.append(new.name)
             new = self._create_new_ip()
-            sleep(5)
+            sleep(10)
         for ip_name in new_but_used_ips:
             ip = self._client.primary_ips.get_by_name(ip_name)
             ip.delete()
-            sleep(5)
+            sleep(10)
         curr_ip = server.public_net.primary_ipv4
         curr_ip.unassign()
-        sleep(5)
+        sleep(10)
         curr_ip.delete()
-        sleep(5)
+        sleep(10)
         new.assign(assignee_id=server.id, assignee_type='server')
-        sleep(5)
+        sleep(10)
         self._already_used_ips.append(new.ip)
         server.power_on()
         return new.ip
