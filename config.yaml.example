@@ -5,5 +5,5 @@ hetzner:
 cloudflare:
   token: 'some_token'
   zone_name: 'domain_name'
-  dns_name: 'subdomain_name'
-  proxied: False
+  dns_name_proxied: 'subdomain_name'
+  dns_name_not_proxied: 'subdomain_name2'

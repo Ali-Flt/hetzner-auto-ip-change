@@ -2,7 +2,6 @@ version: '1'
 services:
   ip-changer:
     image: hetzner-ip-changer
-    restart: always
     network_mode: "host"
     working_dir: /app
     volumes:
@@ -16,7 +15,6 @@ services:
       
   redis_db:
     image: redis:6.2-alpine
-    restart: always
     ports:
       - '127.0.0.1:6379:6379'
     command: redis-server --save 20 1 --loglevel warning

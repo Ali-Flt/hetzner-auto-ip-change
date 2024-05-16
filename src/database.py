@@ -36,30 +36,12 @@ def set_parameter(key, value):
     else:
         return None
 
-def get_cached_parameter(key):
-    if key in parameters:
-        return cache_parameters[key]
-    else:
-        return None
-
-def set_parameters_to_cache(keys=None):
-    if keys is None:
-        keys = parameters
-    for key in keys:
-        cache_parameters[key] = get_parameter(key)
-
-def print_cached_parameters(keys=None):
-    print("Cached Parameters:")
-    if keys is None:
-        keys = parameters
-    for key in keys:
-        if key in cache_parameters:
-            print(f"{key}: {cache_parameters[key]}")
-        else:
-            print(f"{key}: Not Found!")
-
 def reset_parameters(keys=None):
     if keys is None:
         keys = parameters
     for key in keys:
         set_parameter(key, get_default(key))
+        
+def shutdown():
+    my_db = singleton()
+    my_db.shutdown()
