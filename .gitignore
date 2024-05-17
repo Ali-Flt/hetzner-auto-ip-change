@@ -163,3 +163,4 @@ config.yml
 config.yaml
 *.rdb
 cert/
+nginx.conf
