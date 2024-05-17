@@ -9,7 +9,7 @@ cache_parameters = {}
 def singleton():
     global my_db
     if my_db is None:
-        my_db = Redis(host='127.0.0.1', port=6379)
+        my_db = Redis(host='redis_db', port=6379)
     return my_db
 
 def get_default(key):
