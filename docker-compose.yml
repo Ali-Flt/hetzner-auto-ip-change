@@ -1,5 +1,6 @@
 services:
   ip-changer:
+    restart: always
     image: hetzner-ip-changer
     working_dir: /app
     volumes:
@@ -11,6 +12,7 @@ services:
       - redis_db
 
   redis_db:
+    restart: always
     image: redis:6.2-alpine
     command: redis-server --port 6379 --save 20 1 --loglevel warning
     volumes: 
@@ -19,6 +21,7 @@ services:
       - hetzner_ip_changer_network
 
   nginx:
+    restart: always
     image: nginx:alpine
     volumes:
       - ./cert:/cert
