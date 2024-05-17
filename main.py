@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from typing import Optional
 import os
 import bcrypt
+import traceback
 
 import yaml
 from src.cloudflare import CF
@@ -90,26 +91,44 @@ async def login(username: str = Form(...), password: str = Form(...)):
 async def change_ip(current_user: dict = Depends(get_current_user)):
     try:
         hetzner = Hetzner(token=config['hetzner']['token'], 
-                        server_name=config['hetzner']['server_name'],
-                        used_ips=database.get_parameter('used_ips'))
+                          server_name=config['hetzner']['server_name'],
+                          used_ips=database.get_parameter('used_ips'))
         cf = CF(token=config['cloudflare']['token'], 
                 zone_name=config['cloudflare']['zone_name'], 
                 dns_name_proxied=config['cloudflare']['dns_name_proxied'],
                 dns_name_not_proxied=config['cloudflare']['dns_name_not_proxied'])
-        hetzner.delete_unused_ips()
+        hetzner.delete_unassigned_ips()
         new_ip = hetzner.change_ip()
         database.set_parameter('used_ips', hetzner._already_used_ips)
         cf.update_record(ip = new_ip)
         result = ""
         result += f"Successfully changed the ip to {new_ip}\n"
-        result += f"used_ips: {database.get_parameter('used_ips')}"
-    except Exception:
-        database.reset_parameters()        
-        result = f"used_ips: {database.get_parameter('used_ips')}"
+        result += f"Used IPs: {database.get_parameter('used_ips')}"
+    except:
+        formatted_lines = traceback.format_exc().splitlines()
+        result = formatted_lines[0] + '\n' + formatted_lines[-1]
     return ResponseModel(message=result)
 
 @app.post("/reset_ips", response_model=ResponseModel)
 async def reset_ips(current_user: dict = Depends(get_current_user)):
     database.reset_parameters()
     result = f"used_ips: {database.get_parameter('used_ips')}"
+    return ResponseModel(message=result)
+
+@app.post("/show_used_ips", response_model=ResponseModel)
+async def show_used_ips(current_user: dict = Depends(get_current_user)):
+    result = f"Used IPs: {database.get_parameter('used_ips')}"
+    return ResponseModel(message=result)
+
+
+@app.post("/delete_unassigned_ips", response_model=ResponseModel)
+async def delete_unassigned_ips(current_user: dict = Depends(get_current_user)):
+    hetzner = Hetzner(token=config['hetzner']['token'], 
+                      server_name=config['hetzner']['server_name'],
+                      used_ips=database.get_parameter('used_ips'))
+    deleted_ips = hetzner.delete_unassigned_ips()
+    if len(deleted_ips):
+        result = f"Unassigned IPs: {deleted_ips} deleted successfully."
+    else:
+        result = "No unassigned IPs to delete."
     return ResponseModel(message=result)

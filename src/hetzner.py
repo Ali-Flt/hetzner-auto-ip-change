@@ -17,12 +17,15 @@ class Hetzner:
         if curr_ip not in self._already_used_ips:
             self._already_used_ips.append(curr_ip)
             
-    def delete_unused_ips(self):
+    def delete_unassigned_ips(self):
         all_ips = self._client.primary_ips.get_all()
+        deleted_ips = []
         for ip in all_ips:
             if ip.assignee_id is None:
+                deleted_ips.append(ip.ip)
                 ip.delete()
                 sleep(10)
+        return deleted_ips
         
     def change_ip(self):
         server = self._client.servers.get_by_name(self._server_name)

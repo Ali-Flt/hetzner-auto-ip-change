@@ -23,6 +23,8 @@
     <h1>IP Management</h1>
     <button onclick="changeIp()">Change IP</button>
     <button onclick="resetIps()">Reset IPs</button>
+    <button onclick="showIPs()">Show IPs</button>
+    <button onclick="deleteUnassignedIps()">Delete Unassigned IPs</button>
     <div id="console"></div>
     <script>
         async function changeIp() {
@@ -38,6 +40,28 @@
 
         async function resetIps() {
             const response = await fetch('/reset_ips', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            logToConsole(data.message);
+        }
+
+        async function showIPs() {
+            const response = await fetch('/show_used_ips', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            logToConsole(data.message);
+        }
+
+        async function deleteUnassignedIps() {
+            const response = await fetch('/delete_unassigned_ips', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
