@@ -8,11 +8,11 @@ from typing import Optional
 import os
 import bcrypt
 import traceback
-from logger import dataLogger
 
 import yaml
 from src.cloudflare import CF
 from src.hetzner import Hetzner
+from src.logger import dataLogger
 from src import database
 
 logger = dataLogger(pre_str="hetzner_log_", directory="logs")
