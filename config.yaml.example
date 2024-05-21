@@ -11,3 +11,6 @@ cloudflare:
 webapp:
   username: 'user'
   password: 'hashed_password'
+
+time:
+  time_zone: 'Iran'
