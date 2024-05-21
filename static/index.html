@@ -128,8 +128,8 @@
             const formattedMessage = message.replace(/\n/g, '<br>');
             const newMessage = document.createElement('div');
             newMessage.innerHTML = formattedMessage;
-            logConsoleElem.appendChild(newMessage);
-            logConsoleElem.scrollTop = logConsoleElem.scrollHeight;
+            consoleElem.appendChild(newMessage);
+            consoleElem.scrollTop = consoleElem.scrollHeight;
         }
         
         function logToLogConsole(message) {
