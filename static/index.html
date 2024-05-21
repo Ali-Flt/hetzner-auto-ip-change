@@ -123,17 +123,11 @@
         }
 
         function logToConsole(message) {
-            const consoleElem = document.getElementById('console');
-            const newMessage = document.createElement('div');
-            newMessage.textContent = message;
-            consoleElem.appendChild(newMessage);
-            consoleElem.scrollTop = consoleElem.scrollHeight;
-        }
-
-        function logToLogConsole(message) {
             const logConsoleElem = document.getElementById('logConsole');
+            // Replace newlines with <br> tags for HTML
+            const formattedMessage = message.replace(/\n/g, '<br>');
             const newMessage = document.createElement('div');
-            newMessage.textContent = message;
+            newMessage.innerHTML = formattedMessage;
             logConsoleElem.appendChild(newMessage);
             logConsoleElem.scrollTop = logConsoleElem.scrollHeight;
         }
@@ -142,13 +136,17 @@
             const currentDate = new Date().toISOString().split('T')[0];
             const logFileName = `hetzner_log_${currentDate}.txt`;
 
-            const response = await fetch(`/logs/${logFileName}`);
-            if (!response.ok) {
-                logToLogConsole(`Error fetching log file: ${response.statusText}`);
-                return;
+            try {
+                const response = await fetch(`logs/${logFileName}`);
+                if (!response.ok) {
+                    logToConsole(`Error fetching log file: ${response.statusText}`);
+                    return;
+                }
+                const logContents = await response.text();
+                logToConsole(logContents);
+            } catch (error) {
+                logToConsole(`Error fetching log file: ${error.message}`);
             }
-            const logContents = await response.text();
-            logToLogConsole(logContents);
         }
     </script>
 </body>
