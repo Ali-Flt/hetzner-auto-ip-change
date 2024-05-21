@@ -7,12 +7,15 @@ from pydantic import BaseModel
 import os
 import bcrypt
 import traceback
+import logging
 
 import yaml
 from src.cloudflare import CF
 from src.hetzner import Hetzner
 from src.logger import dataLogger
 from src import database
+
+logging.basicConfig()
 
 config = {}
 with open("config.yaml") as f:

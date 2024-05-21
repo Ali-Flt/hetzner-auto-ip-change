@@ -2,9 +2,6 @@ from hcloud import Client
 from random import randint
 from asyncio import sleep
 from retry.api import retry_call
-import logging
-
-logging.basicConfig()
 
 def random_with_N_digits(n):
     range_start = 10**(n-1)
