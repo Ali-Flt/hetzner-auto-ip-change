@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IP Management</title>
     <style>
-        #console {
+        #console, #logConsole {
             width: 100%;
             height: 200px;
             border: 1px solid #000;
             padding: 10px;
             background: #f9f9f9;
             overflow-y: auto;
+            margin-top: 10px;
         }
         button {
             margin: 10px;
@@ -21,14 +22,64 @@
 </head>
 <body>
     <h1>IP Management</h1>
+    <button onclick="powerOn()">Power On Server</button>
+    <button onclick="powerOff()">Power Off Server</button>
+    <button onclick="checkServerStatus()">Check Server Status</button>
     <button onclick="changeIp()">Change IP</button>
-    <button onclick="resetIps()">Reset IPs</button>
-    <button onclick="showIPs()">Show IPs</button>
+    <button onclick="resetIps()">Reset Database IPs List</button>
+    <button onclick="showIPs()">Show Used IPs</button>
+    <button onclick="showCurrIP()">Show Current IP</button>
     <button onclick="deleteUnassignedIps()">Delete Unassigned IPs</button>
+    <button onclick="loadLog()">Load Log</button>
     <div id="console"></div>
+    <div id="logConsole"></div>
     <script>
+        async function powerOn() {
+            const response = await fetch('/power_on', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            logToConsole(data.message);
+        }
+
+        async function powerOff() {
+            const response = await fetch('/power_off', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            logToConsole(data.message);
+        }
+
+        async function checkServerStatus() {
+            const response = await fetch('/check_server_status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            logToConsole(data.message);
+        }
+
         async function changeIp() {
             const response = await fetch('/change_ip', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            logToConsole(data.message);
+        }
+
+        async function showCurrIP() {
+            const response = await fetch('/show_curr_ip', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -77,6 +128,27 @@
             newMessage.textContent = message;
             consoleElem.appendChild(newMessage);
             consoleElem.scrollTop = consoleElem.scrollHeight;
+        }
+
+        function logToLogConsole(message) {
+            const logConsoleElem = document.getElementById('logConsole');
+            const newMessage = document.createElement('div');
+            newMessage.textContent = message;
+            logConsoleElem.appendChild(newMessage);
+            logConsoleElem.scrollTop = logConsoleElem.scrollHeight;
+        }
+
+        async function loadLog() {
+            const currentDate = new Date().toISOString().split('T')[0];
+            const logFileName = `hetzner_log_${currentDate}.txt`;
+
+            const response = await fetch(`/logs/${logFileName}`);
+            if (!response.ok) {
+                logToLogConsole(`Error fetching log file: ${response.statusText}`);
+                return;
+            }
+            const logContents = await response.text();
+            logToLogConsole(logContents);
         }
     </script>
 </body>
