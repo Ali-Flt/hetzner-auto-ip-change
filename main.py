@@ -103,10 +103,10 @@ async def login(username: str = Form(...), password: str = Form(...)):
 @app.post("/change_ip", response_model=ResponseModel)
 async def change_ip(current_user: dict = Depends(get_current_user)):
     try:
-        hetzner.delete_unassigned_ips()
-        new_ip = hetzner.change_ip()
+        await hetzner.delete_unassigned_ips()
+        new_ip = await  hetzner.change_ip()
         database.set_parameter('used_ips', hetzner._already_used_ips)
-        cf.update_record(ip = new_ip)
+        await cf.update_record(ip = new_ip)
         result = ""
         result += f"Successfully changed the ip to {new_ip}\n"
         result += f"Used IPs: {database.get_parameter('used_ips')}"
@@ -140,7 +140,7 @@ async def show_used_ips(current_user: dict = Depends(get_current_user)):
 @app.post("/show_curr_ip", response_model=ResponseModel)
 async def show_curr_ip(current_user: dict = Depends(get_current_user)):
     try:
-        curr_ip = hetzner.get_current_ip()
+        curr_ip = await hetzner.get_current_ip()
         result = f"Current IP: {curr_ip}"
     except:
         formatted_lines = traceback.format_exc().splitlines()
@@ -152,7 +152,7 @@ async def show_curr_ip(current_user: dict = Depends(get_current_user)):
 @app.post("/delete_unassigned_ips", response_model=ResponseModel)
 async def delete_unassigned_ips(current_user: dict = Depends(get_current_user)):
     try:
-        deleted_ips = hetzner.delete_unassigned_ips()
+        deleted_ips = await hetzner.delete_unassigned_ips()
         if len(deleted_ips):
             result = f"Unassigned IPs: {deleted_ips} deleted successfully."
         else:
@@ -166,7 +166,7 @@ async def delete_unassigned_ips(current_user: dict = Depends(get_current_user)):
 @app.post("/power_on", response_model=ResponseModel)
 async def power_on(current_user: dict = Depends(get_current_user)):
     try:
-        hetzner.power_on_server()
+        await hetzner.power_on_server()
         result = f"Powered the server on."
     except:
         formatted_lines = traceback.format_exc().splitlines()
@@ -177,7 +177,7 @@ async def power_on(current_user: dict = Depends(get_current_user)):
 @app.post("/power_off", response_model=ResponseModel)
 async def power_off(current_user: dict = Depends(get_current_user)):
     try:
-        hetzner.shutdown_server()
+        await hetzner.shutdown_server()
         result = f"Powered the server off."
     except:
         formatted_lines = traceback.format_exc().splitlines()
@@ -188,7 +188,7 @@ async def power_off(current_user: dict = Depends(get_current_user)):
 @app.post("/check_server_status", response_model=ResponseModel)
 async def check_server_status(current_user: dict = Depends(get_current_user)):
     try:
-        status = hetzner.get_server_status()
+        status = await hetzner.get_server_status()
         result = f"Server status: {status}"
     except:
         formatted_lines = traceback.format_exc().splitlines()

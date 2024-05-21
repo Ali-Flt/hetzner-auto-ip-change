@@ -24,7 +24,7 @@ class CF:
         self._logger.log(f"Creating DNS record: {dns_record}")
         self._cf.zones.dns_records.post(self._zone_id, data=dns_record)
         
-    def update_record(self, ip : str):
+    async def update_record(self, ip : str):
         self._delete_records_(dns_name=self._dns_name_proxied)
         self._delete_records_(dns_name=self._dns_name_not_proxied)
         self._create_record_(ip=ip, dns_name=self._dns_name_proxied, proxied=True)
