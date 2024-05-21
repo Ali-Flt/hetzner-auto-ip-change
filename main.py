@@ -116,6 +116,18 @@ async def change_ip(current_user: dict = Depends(get_current_user)):
     logger.log(result)
     return ResponseModel(message=result)
 
+@app.post("/update_dns", response_model=ResponseModel)
+async def update_dns(current_user: dict = Depends(get_current_user)):
+    try:
+        curr_ip = await hetzner.get_current_ip()
+        await cf.update_record(ip = curr_ip)
+        result = "Successfully updated dns records."
+    except:
+        formatted_lines = traceback.format_exc().splitlines()
+        result = formatted_lines[0] + '\n' + formatted_lines[-1]
+    logger.log(result)
+    return ResponseModel(message=result)
+
 @app.post("/reset_ips", response_model=ResponseModel)
 async def reset_ips(current_user: dict = Depends(get_current_user)):
     try:

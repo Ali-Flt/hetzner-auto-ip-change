@@ -26,6 +26,7 @@
     <button onclick="powerOff()">Power Off Server</button>
     <button onclick="checkServerStatus()">Check Server Status</button>
     <button onclick="changeIp()">Change IP</button>
+    <button onclick="updateDNS()">Update DNS Records</button>
     <button onclick="resetIps()">Reset Database IPs List</button>
     <button onclick="showIPs()">Show Used IPs</button>
     <button onclick="showCurrIP()">Show Current IP</button>
@@ -34,8 +35,34 @@
     <div id="console"></div>
     <div id="logConsole"></div>
     <script>
+        async function fetchWithTimeout(resource, options = {}) {
+        const { timeout = 300000 } = options;
+        
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeout);
+
+        const response = await fetch(resource, {
+            ...options,
+            signal: controller.signal  
+        });
+        clearTimeout(id);
+
+        return response;
+        }
+
+        async function updateDNS() {
+            const response = await fetchWithTimeout('/update_dns', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            logToConsole(data.message);
+        }
+
         async function powerOn() {
-            const response = await fetch('/power_on', {
+            const response = await fetchWithTimeout('/power_on', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -46,7 +73,7 @@
         }
 
         async function powerOff() {
-            const response = await fetch('/power_off', {
+            const response = await fetchWithTimeout('/power_off', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -57,7 +84,7 @@
         }
 
         async function checkServerStatus() {
-            const response = await fetch('/check_server_status', {
+            const response = await fetchWithTimeout('/check_server_status', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -68,7 +95,7 @@
         }
 
         async function changeIp() {
-            const response = await fetch('/change_ip', {
+            const response = await fetchWithTimeout('/change_ip', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -79,7 +106,7 @@
         }
 
         async function showCurrIP() {
-            const response = await fetch('/show_curr_ip', {
+            const response = await fetchWithTimeout('/show_curr_ip', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -90,7 +117,7 @@
         }
 
         async function resetIps() {
-            const response = await fetch('/reset_ips', {
+            const response = await fetchWithTimeout('/reset_ips', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -101,7 +128,7 @@
         }
 
         async function showIPs() {
-            const response = await fetch('/show_used_ips', {
+            const response = await fetchWithTimeout('/show_used_ips', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -112,7 +139,7 @@
         }
 
         async function deleteUnassignedIps() {
-            const response = await fetch('/delete_unassigned_ips', {
+            const response = await fetchWithTimeout('/delete_unassigned_ips', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
