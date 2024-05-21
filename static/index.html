@@ -123,6 +123,16 @@
         }
 
         function logToConsole(message) {
+            const consoleElem = document.getElementById('console');
+            // Replace newlines with <br> tags for HTML
+            const formattedMessage = message.replace(/\n/g, '<br>');
+            const newMessage = document.createElement('div');
+            newMessage.innerHTML = formattedMessage;
+            logConsoleElem.appendChild(newMessage);
+            logConsoleElem.scrollTop = logConsoleElem.scrollHeight;
+        }
+        
+        function logToLogConsole(message) {
             const logConsoleElem = document.getElementById('logConsole');
             // Replace newlines with <br> tags for HTML
             const formattedMessage = message.replace(/\n/g, '<br>');
@@ -139,13 +149,13 @@
             try {
                 const response = await fetch(`logs/${logFileName}`);
                 if (!response.ok) {
-                    logToConsole(`Error fetching log file: ${response.statusText}`);
+                    logToLogConsole(`Error fetching log file: ${response.statusText}`);
                     return;
                 }
                 const logContents = await response.text();
-                logToConsole(logContents);
+                logToLogConsole(logContents);
             } catch (error) {
-                logToConsole(`Error fetching log file: ${error.message}`);
+                logToLogConsole(`Error fetching log file: ${error.message}`);
             }
         }
     </script>
