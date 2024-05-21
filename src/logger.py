@@ -10,5 +10,5 @@ class dataLogger:
         Path(directory).mkdir(parents=True, exist_ok=True)
         
     def log(self, msg: str) -> None:
-        with open(os.path.join(self._directory, f"{self._pre_str}{str(datetime.now().date())}.txt", "a")) as file:
+        with open(os.path.join(self._directory, f"{self._pre_str}{str(datetime.now().date())}.txt"), "a") as file:
             file.write(str(datetime.now().time()) + ":    " + msg + "\n")
