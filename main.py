@@ -5,7 +5,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 import os
-import time
 import bcrypt
 import traceback
 
@@ -15,15 +14,11 @@ from src.hetzner import Hetzner
 from src.logger import dataLogger
 from src import database
 
-
-logger = dataLogger(pre_str="hetzner_log_", directory="logs")
-
 config = {}
 with open("config.yaml") as f:
     config = yaml.load(f, Loader=yaml.loader.SafeLoader)
 
-os.environ['TZ'] = config['time']['time_zone']
-time.tzset()
+logger = dataLogger(pre_str="hetzner_log_", directory="logs", tz=config['time']['time_zone'])
 
 hetzner = Hetzner(token=config['hetzner']['token'], 
                   server_name=config['hetzner']['server_name'],
