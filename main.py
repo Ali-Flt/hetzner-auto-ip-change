@@ -107,8 +107,8 @@ async def change_ip(current_user: dict = Depends(get_current_user)):
         new_ip = await  hetzner.change_ip()
         database.set_parameter('used_ips', hetzner._already_used_ips)
         await cf.update_record(ip = new_ip)
-        result = ""
-        result += f"Successfully changed the ip to {new_ip}\n"
+        await hetzner.delete_unassigned_ips()
+        result = f"Successfully changed the ip to {new_ip}\n"
         result += f"Used IPs: {database.get_parameter('used_ips')}"
     except:
         formatted_lines = traceback.format_exc().splitlines()
