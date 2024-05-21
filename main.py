@@ -111,24 +111,36 @@ async def change_ip(current_user: dict = Depends(get_current_user)):
 
 @app.post("/reset_ips", response_model=ResponseModel)
 async def reset_ips(current_user: dict = Depends(get_current_user)):
-    database.reset_parameters()
-    result = f"used_ips: {database.get_parameter('used_ips')}"
+    try:
+        database.reset_parameters()
+        result = f"used_ips: {database.get_parameter('used_ips')}"
+    except:
+        formatted_lines = traceback.format_exc().splitlines()
+        result = formatted_lines[0] + '\n' + formatted_lines[-1]
     return ResponseModel(message=result)
 
 @app.post("/show_used_ips", response_model=ResponseModel)
 async def show_used_ips(current_user: dict = Depends(get_current_user)):
-    result = f"Used IPs: {database.get_parameter('used_ips')}"
+    try:
+        result = f"Used IPs: {database.get_parameter('used_ips')}"
+    except:
+        formatted_lines = traceback.format_exc().splitlines()
+        result = formatted_lines[0] + '\n' + formatted_lines[-1]
     return ResponseModel(message=result)
 
 
 @app.post("/delete_unassigned_ips", response_model=ResponseModel)
 async def delete_unassigned_ips(current_user: dict = Depends(get_current_user)):
-    hetzner = Hetzner(token=config['hetzner']['token'], 
-                      server_name=config['hetzner']['server_name'],
-                      used_ips=database.get_parameter('used_ips'))
-    deleted_ips = hetzner.delete_unassigned_ips()
-    if len(deleted_ips):
-        result = f"Unassigned IPs: {deleted_ips} deleted successfully."
-    else:
-        result = "No unassigned IPs to delete."
+    try:
+        hetzner = Hetzner(token=config['hetzner']['token'], 
+                        server_name=config['hetzner']['server_name'],
+                        used_ips=database.get_parameter('used_ips'))
+        deleted_ips = hetzner.delete_unassigned_ips()
+        if len(deleted_ips):
+            result = f"Unassigned IPs: {deleted_ips} deleted successfully."
+        else:
+            result = "No unassigned IPs to delete."
+    except:
+        formatted_lines = traceback.format_exc().splitlines()
+        result = formatted_lines[0] + '\n' + formatted_lines[-1]
     return ResponseModel(message=result)
