@@ -46,6 +46,7 @@ class ResponseModel(BaseModel):
 
 # Serve the static directory
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/logs", StaticFiles(directory="logs"), name="logs")
 
 # In-memory session store
 user_sessions = {}
