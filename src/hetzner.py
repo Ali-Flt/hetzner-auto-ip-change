@@ -17,12 +17,12 @@ class Hetzner:
         self._logger = logger
             
     async def delete_unassigned_ips(self) -> list:
-        all_ips = retry_call(self._client.primary_ips.get_all, delay=5)
+        all_ips = retry_call(self._client.primary_ips.get_all, delay=10, tries=10)
         deleted_ips = []
         for ip in all_ips:
             if ip.assignee_id is None:
                 deleted_ips.append(ip.ip)
-                retry_call(ip.delete, delay=5)
+                retry_call(ip.delete, delay=10, tries=10)
         return deleted_ips
 
     async def get_current_ip(self) -> str:
@@ -33,22 +33,22 @@ class Hetzner:
     async def power_on_server(self) -> None:
         server = self.get_server()
         self._logger.log(f"Powering on the server...")
-        retry_call(server.power_on, delay=5)
+        retry_call(server.power_on, delay=10, tries=10)
         await sleep(60)
         
     async def shutdown_server(self) -> None:
         server = self.get_server()
         self._logger.log("Shutting the server down...")
-        retry_call(server.shutdown, delay=5)
+        retry_call(server.shutdown, delay=10, tries=10)
         
     async def get_server_status(self):
         self._logger.log("Getting server status...")
-        return retry_call(self._client.servers.get_by_name, fargs=[self._server_name], delay=5).status
+        return retry_call(self._client.servers.get_by_name, fargs=[self._server_name], delay=10, tries=10).status
         
     async def change_ip(self) -> str:
         server = self.get_server()
         self._logger.log("Shutting the server down...")
-        retry_call(server.shutdown, delay=5)
+        retry_call(server.shutdown, delay=10, tries=10)
         self._logger.log("Creating a new IP...")
         new = self._create_new_ip()
         self._logger.log(f"New IP created: {new.ip}")
@@ -59,23 +59,23 @@ class Hetzner:
             new = self._create_new_ip()
             self._logger.log(f"New IP created: {new.ip}")
         for ip_name in new_but_used_ips:
-            ip = retry_call(self._client.primary_ips.get_by_name, fargs=[ip_name], delay=5)
+            ip = retry_call(self._client.primary_ips.get_by_name, fargs=[ip_name], delay=10, tries=10)
             self._logger.log(f"Deleting IP: {ip.ip}")
-            retry_call(ip.delete, delay=5)
+            retry_call(ip.delete, delay=10, tries=10)
             self._logger.log(f"IP deleted: {ip.ip}")
         curr_ip = server.public_net.primary_ipv4
         self._logger.log(f"Unassigning IP: {curr_ip.ip}")
-        retry_call(curr_ip.unassign, delay=5)
+        retry_call(curr_ip.unassign, delay=10, tries=10)
         self._logger.log(f"IP unassigned: {curr_ip.ip}")
         self._logger.log(f"Assigning IP: {new.ip}")
-        retry_call(new.assign, fkwargs={"assignee_id": server.id, "assignee_type": 'server'}, delay=5)
+        retry_call(new.assign, fkwargs={"assignee_id": server.id, "assignee_type": 'server'}, delay=10, tries=10)
         self._logger.log(f"IP assigned: {new.ip}")
         self._already_used_ips.append(curr_ip.ip)
         self._logger.log(f"Deleting IP: {curr_ip.ip}")
-        retry_call(curr_ip.delete, delay=5)
+        retry_call(curr_ip.delete, delay=10, tries=10)
         self._logger.log(f"IP deleted: {curr_ip.ip}")
         self._logger.log(f"Powering on the server...")
-        retry_call(server.power_on, delay=5)
+        retry_call(server.power_on, delay=10, tries=10)
         return new.ip
     
     def _create_new_ip(self):
@@ -83,4 +83,4 @@ class Hetzner:
         return retry_call(self._client.primary_ips.create, fkwargs={"type":'ipv4', "name":f'primary_ip-{random_with_N_digits(9)}', "datacenter":server.datacenter}).primary_ip
     
     def get_server(self):
-        return retry_call(self._client.servers.get_by_name, fargs=[self._server_name], delay=5)
+        return retry_call(self._client.servers.get_by_name, fargs=[self._server_name], delay=10, tries=10)
